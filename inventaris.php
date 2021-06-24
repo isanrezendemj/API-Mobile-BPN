@@ -14,7 +14,7 @@ while ($row = $result->fetch_assoc()) {
         "tempat_aset"=>$row['Tempat_Aset'],
         "merk_barang"=>$row['Merk_Barang'],
         "kondisi"=>$row['Kondisi'],
-        "gambar"=> $row['Image']
+        "gambar"=> 'http://149.28.153.239:9000/storage/' . $row['Image']
     ];
 }
 $conn->close();

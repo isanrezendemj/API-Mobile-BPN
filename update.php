@@ -1,42 +1,55 @@
 <?php
-
-
 include_once('include.php');
 
-$No_Aset = $_GET['Kode_Aset'];
+//echo json_encode($_POST);
+//die;
 
-if (isset($_GET['token'])) {
-    $Token = $_GET['token'];
+$No_Aset = $_POST['code'];
+if (isset($_POST['token'])) {
+    $Token = $_POST['token'];
+    $Kondisi = $_POST['kondisi'];
+    if ($Token == 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9') {
+	$security = $_POST['security'];
 
-    $Kondisi = $_POST['Kondisi'];
-    
-    if ($Token == '1234556665o6u') {
-        $sql ="UPDATE `inventaris` SET `Kondisi` = '$Kondisi' WHERE `inventaris`.`id` = $No_Aset";
+	$sql = "SELECT * FROM tb_security_code WHERE code = '$security'";
+	$security_result = mysqli_query(getconnection(), $sql);
 
-        // echo $sql;
+	if(mysqli_num_rows($security_result) > 0){
 
-        $query = mysqli_query(getconnection(), $sql);
-        if ($query) {
-            $msg = "Update berhasil";
-        } else {
-            $msg = "Update gagal";
-        }
+	        $sql ="UPDATE `inventaris` SET `Kondisi` = '$Kondisi' WHERE `inventaris`.`No_Aset` = $No_Aset";
+       		// echo $sql;
+       		$query = mysqli_query(getconnection(), $sql);
+       		if ($query) {
+        		$response = array(
+            		'response' => 200,
+            		'status'=>'OK' ,
+            		'msg' => "Update Success"
+        		);
+		} else {
+			$response = array(
+                        'response' => 403,
+                        'status'=>'NOT OK' ,
+                        'msg' => "Update Failed"
+                	);
+		}
+        	echo json_encode($response);
+	} else  {
+		$msg = "security code not registered! access denied";
+		$response = array(
+			'response' => 403,
+			'status' => 'forbidden',
+			'msg' => $msg,
+		);
+		echo json_encode($response);
+	}
 
-        $response = array(
-    'response' => 200,
-    'status'=>'OK' ,
-    'msg' => $msg
-);
-
-        echo json_encode($response);
     } else {
         $msg = 'token salah';
         $response = array(
-        'response' => 403,
-        'status'=>'forbidden' ,
-        'msg' => $msg
-    );
-    
+            'response' => 403,
+            'status'=>'forbidden' ,
+            'msg' => $msg
+        );
         echo json_encode($response);
     }
 } else {
@@ -46,6 +59,5 @@ if (isset($_GET['token'])) {
     'status'=>'Bad Request' ,
     'msg' => $msg
 );
-
-    echo json_encode($response);
+echo json_encode($response);
 }
